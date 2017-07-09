@@ -1,5 +1,7 @@
 # alpha-errors
 
+[![CircleCI](https://circleci.com/gh/wookieb/alpha-errors.svg?style=svg)](https://circleci.com/gh/wookieb/alpha-errors)
+
 Simple system that introduces useful "code" property to your errors and facilitates error management
 
 Features:
