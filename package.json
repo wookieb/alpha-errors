@@ -1,0 +1,46 @@
+{
+  "name": "alpha-errors",
+  "version": "0.1.0",
+  "description": "Simple helper to create error domains with error codes",
+  "main": "compiled/index.js",
+  "types": "compiled/index.d.ts",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha -r ts-node/register tests/**/*Test.ts",
+    "test:coverage": "nyc --extension .ts npm test",
+    "compile": "tsc",
+    "prepublish": "npm run compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wookieb/alpha-errors.git"
+  },
+  "files": [
+    "compiled"
+  ],
+  "keywords": [
+    "typescript",
+    "alpha",
+    "packages",
+    "errors",
+    "error",
+    "code"
+  ],
+  "author": "Łukasz Kużyński <lukasz.kuzynski@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wookieb/alpha-errors/issues"
+  },
+  "homepage": "https://github.com/wookieb/alpha-errors#readme",
+  "devDependencies": {
+    "@types/chai": "^4.0.1",
+    "@types/faker": "^4.1.0",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^8.0.9",
+    "chai": "^4.0.2",
+    "faker": "^4.1.0",
+    "mocha": "^3.4.2",
+    "nyc": "^11.0.3",
+    "ts-node": "^3.2.0",
+    "typescript": "^2.4.1"
+  }
+}

@@ -1,0 +1,14 @@
+machine:
+  node:
+    version: 6.10.3
+  environment:
+    MOCHA_FILE: $CIRCLE_TEST_REPORTS/tests-results.xml
+
+dependencies:
+  pre:
+    - "npm install -g npm"
+
+test:
+  override:
+    - "npm install mocha-junit-reporter"
+    - "npm run test -- --reporter mocha-junit-reporter"
