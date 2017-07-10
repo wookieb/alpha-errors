@@ -1,6 +1,6 @@
 {
   "name": "alpha-errors",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Simple helper to create error domains with error codes",
   "main": "compiled/index.js",
   "types": "compiled/index.d.ts",

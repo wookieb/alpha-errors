@@ -51,6 +51,12 @@ describe('ErrorsDomain', () => {
 
             assertCreatedError(error, MESSAGE, '1', CustomErrorClass);
         });
+
+        it('custom error class per descriptor', () => {
+            const domain = new ErrorsDomain();
+            const errorFunc = domain.create({errorClass: CustomErrorClass});
+            assertCreatedError(errorFunc(MESSAGE), MESSAGE, '1', CustomErrorClass);
+        })
     });
 
     it('creating with "new" operator', () => {
@@ -77,6 +83,13 @@ describe('ErrorsDomain', () => {
 
             assertCreatedError(error, MESSAGE2);
         });
+
+        it('default message from descriptor options', () => {
+            const errorFunc = new ErrorsDomain().create({message: MESSAGE});
+
+            assertCreatedError(errorFunc(), MESSAGE);
+            assertCreatedError(errorFunc(MESSAGE2), MESSAGE2);
+        });
     });
 
     describe('extra properties', () => {
@@ -95,6 +108,24 @@ describe('ErrorsDomain', () => {
             assertCreatedError(error, MESSAGE);
             assertExtraProperties(error, {...EXTRA_PROPERTIES, ...EXTRA_PROPERTIES2});
         });
+
+        it('default extra properties from descriptor options', () => {
+            const errorFunc = new ErrorsDomain().create({extraProperties: EXTRA_PROPERTIES});
+            const error = errorFunc(MESSAGE);
+
+            assertCreatedError(error, MESSAGE);
+            assertExtraProperties(error, EXTRA_PROPERTIES);
+        });
+    });
+
+    it('customizing code per descriptor', () => {
+        const domain = new ErrorsDomain();
+
+        const errorFunc1 = domain.create(undefined, '10');
+        const errorFunc2 = domain.create({code: 20});
+
+        assertCreatedError(errorFunc1(MESSAGE), MESSAGE, '10');
+        assertCreatedError(errorFunc2(MESSAGE), MESSAGE, '20');
     });
 
     it('calls codeGenerator in order to receive new code', () => {

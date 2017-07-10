@@ -107,3 +107,22 @@ const error2 = errorDescriptor(undefined, {foo: 'override bar', newProperty: 'te
 // error2.bar === 'noo'
 // error2.newProperty === 'test'
 ```
+
+### Customize error class
+
+```typescript
+
+const domain = create({errorClass: CustomErrorClass});
+
+const errorDescriptor1 = domain.create();
+const errorDescriptor2 = domain.create({errorClass: AnotherCustomErrorClass});
+
+errorDescriptor1() instanceof CustomErrorClass; // true
+errorDescriptor2() instanceof AnotherCustomErrorClass; // true
+```
+
+# Changelog
+
+## 0.1.1
+* Added ability to set errorClass per error descriptor
+* Error descriptor options as first argument for ErrorsDomain.prototype.create
