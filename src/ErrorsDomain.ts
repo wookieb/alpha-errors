@@ -12,22 +12,23 @@ export interface ErrorsDomainOptions {
 
 export interface ErrorDescriptorOptions {
     message?: string;
-    code?: string | number,
+    code?: string,
     extraProperties?: object
     errorClass?: ErrorConstructor
 }
 
-export type domainErrorDescriptor = {
+export interface DomainErrorDescriptor {
     (message?: string, extraProperties?: object): any,
     new(message?: string, extraProperties?: object): any;
 
     defaultMessage: string;
     defaultExtraProperties: object;
     errorClass: ErrorConstructor
+    code: string
 }
 
 export class ErrorsDomain {
-    private codeToError: Map<string, domainErrorDescriptor> = new Map();
+    private codeToError: Map<string, DomainErrorDescriptor> = new Map();
 
     constructor(private options: ErrorsDomainOptions = {}) {
         this.options.errorClass = this.options.errorClass || Error;
@@ -53,9 +54,9 @@ export class ErrorsDomain {
      * // or
      * throw errors.NOT_FOUND('User not found')
      */
-    create(options?: ErrorDescriptorOptions): domainErrorDescriptor;
-    create(defaultMessage?: string, code?: string | number, defaultExtraProperties?: object): domainErrorDescriptor;
-    create(defaultMessage?: string | ErrorDescriptorOptions, code?: string | number, defaultExtraProperties?: object): domainErrorDescriptor {
+    create(options?: ErrorDescriptorOptions): DomainErrorDescriptor;
+    create(defaultMessage?: string, code?: string | number, defaultExtraProperties?: object): DomainErrorDescriptor;
+    create(defaultMessage?: string | ErrorDescriptorOptions, code?: string | number, defaultExtraProperties?: object): DomainErrorDescriptor {
 
         let errorClass: ErrorConstructor;
         if (defaultMessage !== undefined && typeof defaultMessage === 'object') {
@@ -71,23 +72,25 @@ export class ErrorsDomain {
 
         code = code === undefined ? this.getFreeCode() : code + '';
         const options = this.options;
-        const errorFunc = function (message?: string, extraProperties: object = {}) {
-            const error = new (errorClass || options.errorClass)(message || <string>defaultMessage);
+        const realErrorClass = errorClass || options.errorClass;
+        const errorFunc: DomainErrorDescriptor = <any>function (message?: string, extraProperties: object = {}) {
+            const error = new realErrorClass(message || <string>defaultMessage);
             Object.assign(error, defaultExtraProperties, extraProperties, {code});
             return error;
         };
-        (<domainErrorDescriptor>errorFunc).defaultMessage = <string>defaultMessage;
-        (<domainErrorDescriptor>errorFunc).defaultExtraProperties = defaultExtraProperties;
-        (<domainErrorDescriptor>errorFunc).errorClass = errorClass;
+        errorFunc.defaultMessage = <string>defaultMessage;
+        errorFunc.defaultExtraProperties = defaultExtraProperties;
+        errorFunc.errorClass = realErrorClass;
+        errorFunc.code = code;
 
-        this.codeToError.set(code, <domainErrorDescriptor>errorFunc);
-        return <domainErrorDescriptor>errorFunc;
+        this.codeToError.set(code, <DomainErrorDescriptor>errorFunc);
+        return <DomainErrorDescriptor>errorFunc;
     }
 
     /**
      * Returns error descriptor for given code
      */
-    findErrorDescriptorForCode(code: string): domainErrorDescriptor {
+    findErrorDescriptorForCode(code: string): DomainErrorDescriptor {
         return this.codeToError.get(code);
     }
 

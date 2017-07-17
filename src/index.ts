@@ -1,6 +1,6 @@
 import {formatCode, incrementNumber} from "./codeGenerators";
 import {ErrorsDomain, ErrorsDomainOptions} from "./ErrorsDomain";
-export {ErrorsDomain, ErrorsDomainOptions, domainErrorDescriptor} from './ErrorsDomain';
+export {ErrorsDomain, ErrorsDomainOptions, DomainErrorDescriptor} from './ErrorsDomain';
 
 export {codeGenerator} from './codeGenerators';
 

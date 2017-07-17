@@ -195,5 +195,5 @@ describe('ErrorsDomain', () => {
         assert.throws(() => {
             domain.create(MESSAGE, '1')
         }, Error, 'Code "1" is already taken');
-    })
+    });
 });

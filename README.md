@@ -123,6 +123,10 @@ errorDescriptor2() instanceof AnotherCustomErrorClass; // true
 
 # Changelog
 
+## 0.1.2
+* Error descriptor is now an interface
+* Added "code" property to error descriptor
+
 ## 0.1.1
 * Added ability to set errorClass per error descriptor
 * Error descriptor options as first argument for ErrorsDomain.prototype.create
