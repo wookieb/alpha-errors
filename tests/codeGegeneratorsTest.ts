@@ -42,5 +42,12 @@ describe('codeGenerators', () => {
             assert.strictEqual(generator(), 'WOO_55');
             assert.strictEqual(generator(), 'WOO_60');
         });
+
+        it('formats code using custom function', () => {
+            const generator = formatCode(n => (n * 2) + '');
+            assert.strictEqual(generator(), '2');
+            assert.strictEqual(generator(), '4');
+            assert.strictEqual(generator(), '6');
+        })
     });
 });

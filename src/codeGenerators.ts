@@ -1,32 +1,34 @@
 import {format as formatEntry} from 'util';
 export type codeGenerator = () => string;
 
-/**
- * Returns generator that simply increments number by value of step
- *
- * @param [startNumber]
- * @param [step] increment step
- */
-export function incrementNumber(startNumber: number = 1, step: number = 1): codeGenerator {
+
+export function incrementNumberGenerator(startNumber: number = 1, step: number = 1) {
     let currentNumber = startNumber;
     return () => {
-        const result = currentNumber + '';
+        const result = currentNumber;
         currentNumber += step;
         return result;
     }
 }
 
 /**
- * Returns generator that generates code by incrementing number by value of step and formats final result using util.formatCode
- *
- * @param format
- * @param startNumber
- * @param step
+ * Returns generator that simply increments number by value of step
  */
-export function formatCode(format: string, startNumber: number = 1, step: number = 1): codeGenerator {
-    const numGenerator = incrementNumber(startNumber, step);
+export function incrementNumber(startNumber: number = 1, step: number = 1): codeGenerator {
+    const numGenerator = incrementNumberGenerator(startNumber, step);
+    return () => {
+        return numGenerator() + '';
+    }
+}
 
+/**
+ * Returns generator that generates code by incrementing number by value of step and formats final result using util.format or provided function
+ */
+export function formatCode(format: string | ((n: number) => string), startNumber: number = 1, step: number = 1): codeGenerator {
+    const numGenerator = incrementNumberGenerator(startNumber, step);
+
+    const formatter = typeof format === 'string' ? formatEntry.bind(this, format) : format;
     return function () {
-        return formatEntry(format, numGenerator());
+        return formatter(numGenerator());
     }
 }

@@ -73,6 +73,12 @@ const customizedFormat = generators.formatCode('WOO_%d', 100, 10);
 format(); // WOO_100
 format(); // WOO_110
 format(); // WOO_120
+
+// custom formatter function
+const customFunctionFormat = generators.formatCode((n) => (n+'').padStart(4, '0'))
+format(); // 0001
+format(); // 0002
+format(); // 0003
 ```
 
 Provide custom generator for errors domain creator.
@@ -122,6 +128,9 @@ errorDescriptor2() instanceof AnotherCustomErrorClass; // true
 ```
 
 # Changelog
+
+## 0.1.3
+* "formatCode" generator accepts custom formatter function
 
 ## 0.1.2
 * Error descriptor is now an interface

@@ -122,7 +122,7 @@ describe('ErrorsDomain', () => {
         const domain = new ErrorsDomain();
 
         const errorFunc1 = domain.create(undefined, '10');
-        const errorFunc2 = domain.create({code: 20});
+        const errorFunc2 = domain.create({code: '20'});
 
         assertCreatedError(errorFunc1(MESSAGE), MESSAGE, '10');
         assertCreatedError(errorFunc2(MESSAGE), MESSAGE, '20');
