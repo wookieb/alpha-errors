@@ -124,7 +124,10 @@ describe('ErrorsDomain', () => {
         const errorFunc1 = domain.create(undefined, '10');
         const errorFunc2 = domain.create({code: '20'});
 
+        assert.propertyVal(errorFunc1, 'code', '10');
         assertCreatedError(errorFunc1(MESSAGE), MESSAGE, '10');
+
+        assert.propertyVal(errorFunc2, 'code', '20');
         assertCreatedError(errorFunc2(MESSAGE), MESSAGE, '20');
     });
 
@@ -195,5 +198,22 @@ describe('ErrorsDomain', () => {
         assert.throws(() => {
             domain.create(MESSAGE, '1')
         }, Error, 'Code "1" is already taken');
+    });
+
+
+    it('checking error descriptor with error via "is"', () => {
+        const domain = new ErrorsDomain();
+
+        const simpleDescriptor = domain.create();
+        const customClassDescriptor = domain.create({errorClass: CustomErrorClass});
+
+        assert.isTrue(simpleDescriptor.is(new simpleDescriptor));
+        assert.isFalse(simpleDescriptor.is(new Error()));
+        assert.isFalse(simpleDescriptor.is({code: simpleDescriptor.code}));
+
+        assert.isTrue(customClassDescriptor.is(new customClassDescriptor));
+        assert.isFalse(customClassDescriptor.is(new Error()));
+        assert.isFalse(customClassDescriptor.is({code: customClassDescriptor.code}));
+        assert.isFalse(customClassDescriptor.is(new CustomErrorClass('test')));
     });
 });

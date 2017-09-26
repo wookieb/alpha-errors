@@ -127,7 +127,23 @@ errorDescriptor1() instanceof CustomErrorClass; // true
 errorDescriptor2() instanceof AnotherCustomErrorClass; // true
 ```
 
+### Check whether error is the error we're looking for
+
+Extra method `is` checks whether provided object is an object, have the same error code and is an instance of error class defined in descriptor.
+
+```typescript
+
+const INVALID_USER = errorsDomain.create('Invalid user', '1', {errorClass: CustomErrorClass});
+
+INVALID_USER.is(new INVALID_USER); // true
+INVALID_USER.is(new Error('Some error')); // false - code doesn't match and it's not an instance of CustomErrorClass
+INVALID_USER.is(new CustomErrorClass('Some error')); // false - code doesn't match
+```
+
 # Changelog
+
+## 0.2.0
+* added "is" method to error descriptors for easy error check
 
 ## 0.1.3
 * "formatCode" generator accepts custom formatter function

@@ -19,12 +19,22 @@ export interface ErrorDescriptorOptions {
 
 export interface DomainErrorDescriptor {
     (message?: string, extraProperties?: object): any,
+
     new(message?: string, extraProperties?: object): any;
+
 
     defaultMessage: string;
     defaultExtraProperties: object;
-    errorClass: ErrorConstructor
-    code: string
+    errorClass: ErrorConstructor;
+    code: string;
+
+    /**
+     * Checks whether given object is the same error
+     *
+     * @param error
+     * @returns {boolean}
+     */
+    is(error: any): boolean;
 }
 
 export class ErrorsDomain {
@@ -82,6 +92,9 @@ export class ErrorsDomain {
         errorFunc.defaultExtraProperties = defaultExtraProperties;
         errorFunc.errorClass = realErrorClass;
         errorFunc.code = code;
+        errorFunc.is = (error: any) => {
+            return typeof error === 'object' && error instanceof realErrorClass && error.code === code;
+        };
 
         this.codeToError.set(code, <DomainErrorDescriptor>errorFunc);
         return <DomainErrorDescriptor>errorFunc;
