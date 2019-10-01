@@ -83,9 +83,9 @@ format(); // 0003
 
 Provide custom generator for errors domain creator.
 ```typescript
-import {create, generators} from 'alpha-errors';
+import {ErrorsDomain, generators} from 'alpha-errors';
 
-const errorsDomain = create({codeGenerator: generators.formatCode('WOO_%d')});
+const errorsDomain = new ErrorsDomain({codeGenerator: generators.formatCode('WOO_%d')});
 const error = errorsDomain.create()() // error.code === 'WOO_1'
 ```
 
@@ -118,7 +118,7 @@ const error2 = errorDescriptor(undefined, {foo: 'override bar', newProperty: 'te
 
 ```typescript
 
-const domain = create({errorClass: CustomErrorClass});
+const domain = new ErrorsDomain({errorClass: CustomErrorClass});
 
 const errorDescriptor1 = domain.create();
 const errorDescriptor2 = domain.create({errorClass: AnotherCustomErrorClass});
@@ -141,6 +141,10 @@ INVALID_USER.is(new CustomErrorClass('Some error')); // false - code doesn't mat
 ```
 
 # Changelog
+
+## 0.3.0
+* Added ErrorsDomain.create static method
+* Added ErrorsDomain.prototype.createErrors for quick domain errors generation
 
 ## 0.2.0
 * added "is" method to error descriptors for easy error check

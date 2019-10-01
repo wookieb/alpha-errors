@@ -1,5 +1,4 @@
-import {ErrorsDomain} from '../src/ErrorsDomain';
-import {assert} from 'chai';
+import {ErrorsDomain} from '@src/ErrorsDomain';
 import * as faker from 'faker';
 import * as sinon from 'sinon';
 
@@ -11,16 +10,20 @@ class CustomErrorClass extends Error {
     }
 }
 
-function assertCreatedError(error: Error, message, code = '1', errorClass: Function = Error) {
-    assert.instanceOf(error, errorClass);
-    assert.propertyVal(error, 'message', message);
-    assert.propertyVal(error, 'code', code);
+function assertCreatedError(error: Error, message: string, code = '1', errorClass: Function = Error) {
+    expect(error)
+        .toBeInstanceOf(errorClass);
+    expect(error)
+        .toHaveProperty('message', message);
+    expect(error)
+        .toHaveProperty('code', code);
 }
 
-function assertExtraProperties(error: Error, extraProperties: object) {
+function assertExtraProperties(error: Error, extraProperties: { [key: string]: any }) {
     Object.keys(extraProperties)
         .forEach(propertyName => {
-            assert.propertyVal(error, propertyName, extraProperties[propertyName]);
+            expect(error)
+                .toHaveProperty(propertyName, extraProperties[propertyName]);
         })
 }
 
@@ -124,10 +127,10 @@ describe('ErrorsDomain', () => {
         const errorFunc1 = domain.create(undefined, '10');
         const errorFunc2 = domain.create({code: '20'});
 
-        assert.propertyVal(errorFunc1, 'code', '10');
+        expect(errorFunc1).toHaveProperty('code', '10');
         assertCreatedError(errorFunc1(MESSAGE), MESSAGE, '10');
 
-        assert.propertyVal(errorFunc2, 'code', '20');
+        expect(errorFunc2).toHaveProperty('code', '20');
         assertCreatedError(errorFunc2(MESSAGE), MESSAGE, '20');
     });
 
@@ -169,16 +172,16 @@ describe('ErrorsDomain', () => {
     it('checking whether code is taken', () => {
         const domain = new ErrorsDomain();
 
-        assert.isFalse(domain.isTaken('1'));
-        assert.isFalse(domain.isTaken('2'));
+        expect(domain.isTaken('1')).toBeFalsy();
+        expect(domain.isTaken('2')).toBeFalsy();
 
         domain.create();
-        assert.isTrue(domain.isTaken('1'));
-        assert.isFalse(domain.isTaken('2'));
+        expect(domain.isTaken('1')).toBeTruthy();
+        expect(domain.isTaken('2')).toBeFalsy();
 
         domain.create();
-        assert.isTrue(domain.isTaken('1'));
-        assert.isTrue(domain.isTaken('2'));
+        expect(domain.isTaken('1')).toBeTruthy();
+        expect(domain.isTaken('2')).toBeTruthy();
     });
 
     it('find error descriptor for code', () => {
@@ -187,33 +190,34 @@ describe('ErrorsDomain', () => {
         const descriptor1 = domain.create();
         const descriptor2 = domain.create();
 
-        assert.strictEqual(domain.findErrorDescriptorForCode('1'), descriptor1);
-        assert.strictEqual(domain.findErrorDescriptorForCode('2'), descriptor2);
+        expect(domain.findErrorDescriptorForCode('1')).toStrictEqual(descriptor1);
+        expect(domain.findErrorDescriptorForCode('2')).toStrictEqual(descriptor2);
     });
 
     it('attempt to use taken code throws an error', () => {
         const domain = new ErrorsDomain();
         domain.create(MESSAGE);
 
-        assert.throws(() => {
+        expect(() => {
             domain.create(MESSAGE, '1')
-        }, Error, 'Code "1" is already taken');
+        })
+            .toThrowError('Code "1" is already taken');
     });
 
 
     it('checking error descriptor with error via "is"', () => {
         const domain = new ErrorsDomain();
 
-        const simpleDescriptor = domain.create();
+        const SimpleDescriptor = domain.create();
         const customClassDescriptor = domain.create({errorClass: CustomErrorClass});
 
-        assert.isTrue(simpleDescriptor.is(new simpleDescriptor));
-        assert.isFalse(simpleDescriptor.is(new Error()));
-        assert.isFalse(simpleDescriptor.is({code: simpleDescriptor.code}));
+        expect(SimpleDescriptor.is(new SimpleDescriptor)).toBeTruthy();
+        expect(SimpleDescriptor.is(new Error())).toBeFalsy();
+        expect(SimpleDescriptor.is({code: SimpleDescriptor.code})).toBeFalsy();
 
-        assert.isTrue(customClassDescriptor.is(new customClassDescriptor));
-        assert.isFalse(customClassDescriptor.is(new Error()));
-        assert.isFalse(customClassDescriptor.is({code: customClassDescriptor.code}));
-        assert.isFalse(customClassDescriptor.is(new CustomErrorClass('test')));
+        expect(customClassDescriptor.is(new customClassDescriptor)).toBeTruthy();
+        expect(customClassDescriptor.is(new Error())).toBeFalsy();
+        expect(customClassDescriptor.is({code: customClassDescriptor.code})).toBeFalsy();
+        expect(customClassDescriptor.is(new CustomErrorClass('test'))).toBeFalsy();
     });
 });
