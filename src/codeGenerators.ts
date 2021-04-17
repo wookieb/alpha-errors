@@ -2,7 +2,6 @@ import {format as formatEntry} from 'util';
 
 export type CodeGenerator = () => string;
 
-
 export function incrementNumberGenerator(startNumber: number = 1, step: number = 1) {
     let currentNumber = startNumber;
     return () => {

@@ -1,4 +1,4 @@
-import {ErrorsDomain} from '@src/ErrorsDomain';
+import {Domain} from '@src/Domain';
 import * as faker from 'faker';
 import * as sinon from 'sinon';
 
@@ -19,7 +19,7 @@ function assertCreatedError(error: Error, message: string, code = '1', errorClas
         .toHaveProperty('code', code);
 }
 
-function assertExtraProperties(error: Error, extraProperties: { [key: string]: any }) {
+function assertExtraProperties(error: any, extraProperties: { [key: string]: any }) {
     Object.keys(extraProperties)
         .forEach(propertyName => {
             expect(error)
@@ -27,7 +27,7 @@ function assertExtraProperties(error: Error, extraProperties: { [key: string]: a
         })
 }
 
-describe('ErrorsDomain', () => {
+describe('Domain', () => {
     const MESSAGE = faker.lorem.sentence();
     const MESSAGE2 = faker.lorem.sentence();
     const EXTRA_PROPERTIES = {
@@ -42,28 +42,28 @@ describe('ErrorsDomain', () => {
 
     describe('using custom error class', () => {
         it('default "Error" used', () => {
-            const errorFunc = new ErrorsDomain().create();
+            const errorFunc = new Domain().create();
             const error = errorFunc(MESSAGE);
 
             assertCreatedError(error, MESSAGE);
         });
 
         it('custom error class', () => {
-            const errorFunc = new ErrorsDomain({errorClass: CustomErrorClass}).create();
+            const errorFunc = new Domain({errorClass: CustomErrorClass}).create();
             const error = errorFunc(MESSAGE);
 
             assertCreatedError(error, MESSAGE, '1', CustomErrorClass);
         });
 
         it('custom error class per descriptor', () => {
-            const domain = new ErrorsDomain();
+            const domain = new Domain();
             const errorFunc = domain.create({errorClass: CustomErrorClass});
             assertCreatedError(errorFunc(MESSAGE), MESSAGE, '1', CustomErrorClass);
         })
     });
 
     it('creating with "new" operator', () => {
-        const errorFunc = new ErrorsDomain().create();
+        const errorFunc = new Domain().create();
 
         const error1 = new errorFunc(MESSAGE);
         const error2 = errorFunc(MESSAGE2);
@@ -74,21 +74,21 @@ describe('ErrorsDomain', () => {
 
     describe('default message', () => {
         it('used if not provided', () => {
-            const errorFunc = new ErrorsDomain().create(MESSAGE);
+            const errorFunc = new Domain().create(MESSAGE);
             const error = errorFunc();
 
             assertCreatedError(error, MESSAGE);
         });
 
         it('ignored if provided', () => {
-            const errorFunc = new ErrorsDomain().create(MESSAGE);
+            const errorFunc = new Domain().create(MESSAGE);
             const error = errorFunc(MESSAGE2);
 
             assertCreatedError(error, MESSAGE2);
         });
 
         it('default message from descriptor options', () => {
-            const errorFunc = new ErrorsDomain().create({message: MESSAGE});
+            const errorFunc = new Domain().create({message: MESSAGE});
 
             assertCreatedError(errorFunc(), MESSAGE);
             assertCreatedError(errorFunc(MESSAGE2), MESSAGE2);
@@ -97,7 +97,7 @@ describe('ErrorsDomain', () => {
 
     describe('extra properties', () => {
         it('default extra properties', () => {
-            const errorFunc = new ErrorsDomain().create(undefined, undefined, EXTRA_PROPERTIES);
+            const errorFunc = new Domain().create(undefined, undefined, EXTRA_PROPERTIES);
             const error = errorFunc(MESSAGE);
 
             assertCreatedError(error, MESSAGE);
@@ -105,7 +105,7 @@ describe('ErrorsDomain', () => {
         });
 
         it('extra properties when creating an error', () => {
-            const errorFunc = new ErrorsDomain().create(undefined, undefined, EXTRA_PROPERTIES);
+            const errorFunc = new Domain().create(undefined, undefined, EXTRA_PROPERTIES);
             const error = errorFunc(MESSAGE, EXTRA_PROPERTIES2);
 
             assertCreatedError(error, MESSAGE);
@@ -113,7 +113,7 @@ describe('ErrorsDomain', () => {
         });
 
         it('default extra properties from descriptor options', () => {
-            const errorFunc = new ErrorsDomain().create({extraProperties: EXTRA_PROPERTIES});
+            const errorFunc = new Domain().create({extraProperties: EXTRA_PROPERTIES});
             const error = errorFunc(MESSAGE);
 
             assertCreatedError(error, MESSAGE);
@@ -122,7 +122,7 @@ describe('ErrorsDomain', () => {
     });
 
     it('customizing code per descriptor', () => {
-        const domain = new ErrorsDomain();
+        const domain = new Domain();
 
         const errorFunc1 = domain.create(undefined, '10');
         const errorFunc2 = domain.create({code: '20'});
@@ -140,9 +140,9 @@ describe('ErrorsDomain', () => {
             return (i += 10) + '';
         });
 
-        const errorFunc1 = new ErrorsDomain({codeGenerator}).create();
-        const errorFunc2 = new ErrorsDomain({codeGenerator}).create();
-        const errorFunc3 = new ErrorsDomain({codeGenerator}).create();
+        const errorFunc1 = new Domain({codeGenerator}).create();
+        const errorFunc2 = new Domain({codeGenerator}).create();
+        const errorFunc3 = new Domain({codeGenerator}).create();
 
         assertCreatedError(errorFunc1(MESSAGE), MESSAGE, '10');
         assertCreatedError(errorFunc2(MESSAGE), MESSAGE, '20');
@@ -157,7 +157,7 @@ describe('ErrorsDomain', () => {
             return (i += 10) + '';
         });
 
-        const domain = new ErrorsDomain({codeGenerator});
+        const domain = new Domain({codeGenerator});
         domain.create(undefined, '10');
         domain.create(undefined, '20');
 
@@ -170,7 +170,7 @@ describe('ErrorsDomain', () => {
     });
 
     it('checking whether code is taken', () => {
-        const domain = new ErrorsDomain();
+        const domain = new Domain();
 
         expect(domain.isTaken('1')).toBeFalsy();
         expect(domain.isTaken('2')).toBeFalsy();
@@ -185,7 +185,7 @@ describe('ErrorsDomain', () => {
     });
 
     it('find error descriptor for code', () => {
-        const domain = new ErrorsDomain();
+        const domain = new Domain();
 
         const descriptor1 = domain.create();
         const descriptor2 = domain.create();
@@ -195,7 +195,7 @@ describe('ErrorsDomain', () => {
     });
 
     it('attempt to use taken code throws an error', () => {
-        const domain = new ErrorsDomain();
+        const domain = new Domain();
         domain.create(MESSAGE);
 
         expect(() => {
@@ -206,7 +206,7 @@ describe('ErrorsDomain', () => {
 
 
     it('checking error descriptor with error via "is"', () => {
-        const domain = new ErrorsDomain();
+        const domain = new Domain();
 
         const SimpleDescriptor = domain.create();
         const customClassDescriptor = domain.create({errorClass: CustomErrorClass});
@@ -219,5 +219,12 @@ describe('ErrorsDomain', () => {
         expect(customClassDescriptor.is(new Error())).toBeFalsy();
         expect(customClassDescriptor.is({code: customClassDescriptor.code})).toBeFalsy();
         expect(customClassDescriptor.is(new CustomErrorClass('test'))).toBeFalsy();
+    });
+
+    it('using message formatting', () => {
+        const descriptor = new Domain().create('How about %s?');
+
+        expect(descriptor.format('foo'))
+            .toHaveProperty('message', 'How about foo?');
     });
 });
