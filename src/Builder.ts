@@ -3,63 +3,63 @@ import {ErrorConstructor} from "./ErrorConstructor";
 import {Builder as BaseBuilder} from '@pallad/builder';
 
 export class Builder extends BaseBuilder {
-    private data: {
-        message?: string,
-        extraProperties?: object,
-        errorClass?: ErrorConstructor;
-    } = {};
+	private data: {
+		message?: string,
+		extraProperties?: object,
+		errorClass?: ErrorConstructor;
+	} = {};
 
-    constructor(readonly options: Builder.Options) {
-        super();
-        Object.freeze(this.options);
-    }
+	constructor(readonly options: Builder.Options) {
+		super();
+		Object.freeze(this.options);
+	}
 
-    newBuilder(): Builder {
-        return new Builder(this.options);
-    }
+	newBuilder(): Builder {
+		return new Builder(this.options);
+	}
 
-    message(message: string): this {
-        this.data.message = message;
-        return this;
-    }
+	message(message: string): this {
+		this.data.message = message;
+		return this;
+	}
 
-    formatMessage(...args: any[]): this {
-        return this.message(util.format(this.options.message, ...args));
-    }
+	formatMessage(...args: any[]): this {
+		return this.message(util.format(this.options.message, ...args));
+	}
 
-    formatNewMessage(message: string, ...args: any[]): this {
-        return this.message(util.format(message, ...args));
-    }
+	formatNewMessage(message: string, ...args: any[]): this {
+		return this.message(util.format(message, ...args));
+	}
 
-    overrideErrorConstructor(errorClass: ErrorConstructor): this {
-        this.data.errorClass = errorClass;
-        return this;
-    }
+	overrideErrorConstructor(errorClass: ErrorConstructor): this {
+		this.data.errorClass = errorClass;
+		return this;
+	}
 
-    extraProperties(properties: object): this {
-        this.data.extraProperties = properties;
-        return this;
-    }
+	extraProperties(properties: object): this {
+		this.data.extraProperties = properties;
+		return this;
+	}
 
-    create() {
-        const errorClass = this.data.errorClass || this.options.errorClass;
-        const message = this.data.message || this.options.message;
+	create() {
+		const errorClass = this.data.errorClass || this.options.errorClass;
+		const message = this.data.message || this.options.message;
 
-        return Object.assign(new errorClass(message),
-            this.options.extraProperties || {},
-            this.data.extraProperties || {},
-            {code: this.options.code}
-        );
-    }
+		return Object.assign(new errorClass(message),
+			this.options.extraProperties || {},
+			this.data.extraProperties || {},
+			{code: this.options.code}
+		);
+	}
 }
 
 export namespace Builder {
-    export interface Options {
-        errorClass: ErrorConstructor;
-        message: string;
-        extraProperties?: object;
-        code: string;
-    }
+	export interface Options {
+		errorClass: ErrorConstructor;
+		message: string;
+		extraProperties?: object;
+		code: string;
+	}
 
-    export type Func = (builder: Builder) => void;
+	export type Func = (builder: Builder) => void;
 }

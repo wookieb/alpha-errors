@@ -1,3 +1,3 @@
 export interface ErrorConstructor {
-    new(message: string): any
+	new(message: string): any
 }

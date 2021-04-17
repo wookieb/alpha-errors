@@ -7,6 +7,6 @@ export * from './ErrorConstructor';
 export * from './Builder';
 
 export const generators = {
-    incrementNumber,
-    formatCode
+	incrementNumber,
+	formatCode
 };
