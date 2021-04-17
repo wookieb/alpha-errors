@@ -17,7 +17,7 @@ export function incrementNumberGenerator(startNumber: number = 1, step: number =
 export function incrementNumber(startNumber: number = 1, step: number = 1): CodeGenerator {
     const numGenerator = incrementNumberGenerator(startNumber, step);
     return () => {
-        return numGenerator() + '';
+        return String(numGenerator());
     }
 }
 

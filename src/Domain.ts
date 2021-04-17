@@ -42,13 +42,13 @@ export class Domain {
             codeCandidate = defaultMessage.code;
         }
 
-        if (codeCandidate !== undefined && this.isTaken(codeCandidate + '')) {
+        if (codeCandidate !== undefined && this.isTaken(String(codeCandidate))) {
             throw new Error(`Code "${codeCandidate}" is already taken`);
         }
 
         const builderOptions: Builder.Options = {
             errorClass: this.options.errorClass,
-            code: codeCandidate === undefined ? this.getFreeCode() : codeCandidate + '',
+            code: codeCandidate === undefined ? this.getFreeCode() : String(codeCandidate),
             message: typeof defaultMessage === 'string' ? defaultMessage : '',
             extraProperties: defaultExtraProperties ?? undefined
         };
@@ -81,7 +81,7 @@ export class Domain {
         errorFunc.defaultExtraProperties = defaultExtraProperties;
         errorFunc.errorClass = builderOptions.errorClass;
         errorFunc.code = builderOptions.code;
-        
+
         errorFunc.builder = () => {
             return builder.newBuilder();
         }

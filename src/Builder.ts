@@ -42,10 +42,10 @@ export class Builder extends BaseBuilder {
     }
 
     create() {
-        const ErrorClass = this.data.errorClass || this.options.errorClass;
+        const errorClass = this.data.errorClass || this.options.errorClass;
         const message = this.data.message || this.options.message;
 
-        return Object.assign(new ErrorClass(message),
+        return Object.assign(new errorClass(message),
             this.options.extraProperties || {},
             this.data.extraProperties || {},
             {code: this.options.code}

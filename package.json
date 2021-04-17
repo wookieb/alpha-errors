@@ -7,7 +7,7 @@
     "scripts": {
         "test": "pallad-scripts test",
         "compile": "pallad-scripts compile",
-        "lint": "pallad-scripts link",
+        "lint": "pallad-scripts lint",
         "prepack": "npm run compile"
     },
     "repository": {
